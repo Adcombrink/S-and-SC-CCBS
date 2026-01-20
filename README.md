@@ -44,9 +44,9 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-Download current repository to your local machine. Use
+Download the current repository to your local machine. Use
 ```
-git clone https://github.com/Adcombrink/S-and-SC-CCBS.git
+git clone https://github.com/Adcombrink/Optimal-Continuous-CBS.git
 ```
 or download it directly, then built the CCBS program using, e.g., CMake:
 ```bash
@@ -65,7 +65,7 @@ For example:
 ```
 ./CCBS map.xml task.xml config.xml
 ```
-runs CCBS on the given problem and outputs a result file in the same directory named as the task-file plus `_log.xml`.
+runs CCBS on the given problem and outputs a result file in the same directory named as the task-file + `_log.xml`.
 
 #### Config options
 
