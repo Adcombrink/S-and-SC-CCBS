@@ -37,7 +37,6 @@ set( HEADER_FILES
      heuristic.h 
      sipp.h 
      task.h
-     benchmarking.h
      cbs.h
 	 structs.h
 	 simplex/columnset.h
