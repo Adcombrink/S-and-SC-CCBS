@@ -8,11 +8,17 @@
   <br>
 <br>
 
-This is the official respository for **Optimal Multi-Agent Path Finding in Continuous Time**, which introduces a new branching rule (δ-BR) for CCBS with guarantees of soundness and solution completeness. That is, CCBS using this branching rule (CCBS-δ-BR) is guaranteed to terminate on any solvable continuous-time MAPF problem with an optimal solution. The pre-print version is available at [![arXiv](https://img.shields.io/badge/arXiv-1234.56789-B31B1B.svg)](https://www.arxiv.org/abs/2508.16410).
+This is the official repository for the publication **Optimal Multi-Agent Path Finding in Continuous Time**, which introduces **Optimal Continuous-time Conflict-Based Search (OC-CBS)**.
+OC-CBS is based on Continuous-time Conflict-Based Search (CCBS) but with a new branching rule (δ-BR) that restores guarantees of exactness and solution completeness. 
+That is, OC-CBS is guaranteed to terminate on any solvable continuous-time MAPF problem with an optimal solution. 
+It is currently under review, the pre-print can be found at [![arXiv](https://img.shields.io/badge/arXiv-1234.56789-B31B1B.svg)](https://www.arxiv.org/abs/2508.16410).
 
 <br> 
 
 ## Abstract
+
+**This abstract is from the pre-print where OC-CBS is called "CCBS with δ-BR". To be updated with the new pre-print.**
+
 _Continuous-time Conflict Based-Search (CCBS) has long been viewed as the de facto optimal solver for multi-agent path finding in continuous time (MAPFR), yet recent critiques show that the theoretically described CCBS can fail to terminate on solvable MAPFR problems while the publicly available reference implementation can return sub-optimal solutions. This work presents an analytical framework that yields simple and sufficient conditions under which any CCBS-style algorithm is both sound (returns only optimal solutions) and solution complete (terminates on every solvable MAPFR problem). Investigating the reference implementation reveals that it violates the soundness conditions, with counterexamples demonstrating sub-optimality._
 
 _Leveraging the framework, we introduce a branching rule (δ-BR) and prove it restores soundness and termination guarantees. Consequently, the resulting CCBS variant is both sound and solution complete, matching the guarantees of the discrete-time CBS for the first time in the continuous domain. On a constructed example, CCBS with δ-BR improves sum-of-costs from 10.707 to 9.000 (≈16 % lower) compared to the reference implementation. Across benchmarks, the reference implementation is generally able to find solutions faster than CCBS with δ-BR due to its more aggressive pruning. However, this comes at the cost of occasional sub-optimality and potential non-termination when all solutions are pruned, whereas δ-BR preserves optimality and guarantees termination by design. Because δ-BR largely only affects the branching step, it can be adopted as a drop-in replacement in existing codebases, as we show in our provided implementation. Beyond CCBS, the analytical framework and termination criterion provide a systematic way to evaluate other CCBS-like MAPFR solvers and future extensions._
@@ -23,8 +29,8 @@ _Leveraging the framework, we introduce a branching rule (δ-BR) and prove it re
 ## Repository Structure
 
 This repository is forked from `PathPlanning/Continuous-CBS:master` and contains two branches:
-- ```master```: contains CCBS using δ-BR.
-- ```originalCCBS```: contains CCBS using the original branching rule.
+- ```master```: contains OC-CBS.
+- ```originalCCBS```: contains CCBS.
 
 Contents
 * [BenchmarkResults](https://github.com/Adcombrink/S-and-SC-CCBS/tree/master/BenchmarkResults) - Benchmarking result files.
@@ -44,9 +50,9 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-Download current repository to your local machine. Use
+Download the current repository to your local machine. Use
 ```
-git clone https://github.com/Adcombrink/S-and-SC-CCBS.git
+git clone https://github.com/Adcombrink/Optimal-Continuous-CBS.git
 ```
 or download it directly, then built the CCBS program using, e.g., CMake:
 ```bash
@@ -55,8 +61,8 @@ cmake .
 make CCBS
 ```
 
-### CCBS on a single MAPF problem
-CCBS is launched with XML file input arguments (see [Examples](https://github.com/Adcombrink/S-and-SC-CCBS/tree/master/Examples)):
+### Solving a single MAPF problem
+The solvers are launched with XML file input arguments (see [Examples](https://github.com/Adcombrink/S-and-SC-CCBS/tree/master/Examples)):
 - `map`: an XML file containing the map data. Two map structures are used: gridmaps and roadmaps. 
 - `tasks`: an XML file containing the start/goal vertex pairs for each agent.
 - `config` (optional): an XML file containing parameter values (see below). Default values are used if no config file is given.
@@ -65,7 +71,7 @@ For example:
 ```
 ./CCBS map.xml task.xml config.xml
 ```
-runs CCBS on the given problem and outputs a result file in the same directory named as the task-file plus `_log.xml`.
+runs OC-CBS/CCBS on the given problem and outputs a result file in the same directory named as the task-file + `_log.xml`.
 
 #### Config options
 
@@ -77,25 +83,6 @@ runs CCBS on the given problem and outputs a result file in the same directory n
 * `<agent_size>` - controls the size (radii) of the agents' shape. Possible values are in the range (0, 0.5].
 * `<precision>` - controls how precise the end of collision interval is detected (the moment of time when there is no more collision between the agents). The lower the value - the preciser the algorithm finds the end of collision interval, but it takes a bit more time. Possible values are >0.
 * `<branching_gamma>` - controls the gamma value used in δ-BR. This option is not available on the ```originalCCBS``` branch.
-
-
-
-### Benchmarking CCBS
-An additional program `benchmarking` is provided to benchmark CCBS on a map and multiple task files according to the benchmarking scheme detailed in the article. To build:
-```bash
-make benchmarking
-```
-Run using
-```
-./benchmarking folder kmin kmax num_processes
-```
-where 
-- `folder`: a folder containing one map XML file named `map.xml`, one config file named 'config.xml' and a number of task XML files.
-- `kmin` and `kmax`: a minimum and maximum connectedness value. This is only used for gridmaps. Every integer from `kmin` to `kmax` will be run.
-- `num_processes`: the maximum number of processes to spawn, for multiprocessing instances on separate CPU cores.
-
-A result file will be output in `folder`.
-
 
 
 

@@ -37,7 +37,6 @@ set( HEADER_FILES
      heuristic.h 
      sipp.h 
      task.h
-     benchmarking.h
      cbs.h
 	 structs.h
 	 simplex/columnset.h
@@ -59,4 +58,3 @@ set( HEADER_FILES
 	 simplex/variable.h)
 
 add_executable( CCBS main.cpp ${SOURCE_FILES} ${HEADER_FILES} )
-add_executable( benchmarking benchmarking.cpp ${SOURCE_FILES} ${HEADER_FILES} )
