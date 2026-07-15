@@ -59,4 +59,3 @@ set( HEADER_FILES
 	 simplex/variable.h)
 
 add_executable( CCBS main.cpp ${SOURCE_FILES} ${HEADER_FILES} )
-add_executable( benchmarking benchmarking.cpp ${SOURCE_FILES} ${HEADER_FILES} )
