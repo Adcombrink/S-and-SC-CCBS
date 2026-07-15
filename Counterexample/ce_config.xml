@@ -8,6 +8,7 @@
 		<focal_weight>1.0</focal_weight>
 		<agent_size>0.353553</agent_size>
 		<timelimit>30</timelimit>
+		<precision>1e-6</precision>
 		<branching_gamma>0.5</branching_gamma>
 	</algorithm>
 </root>
