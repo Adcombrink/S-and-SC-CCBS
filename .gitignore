@@ -1,2 +1,8 @@
 .DS_Store
 /.idea
+/CMakeFiles
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+/CCBS
+/movingai_converter
