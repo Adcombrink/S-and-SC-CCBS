@@ -84,6 +84,42 @@ runs OC-CBS/CCBS on the given problem and outputs a result file in the same dire
 * `<precision>` - controls how precise the end of collision interval is detected (the moment of time when there is no more collision between the agents). The lower the value - the preciser the algorithm finds the end of collision interval, but it takes a bit more time. Possible values are >0.
 * `<branching_gamma>` - controls the gamma value used in δ-BR. This option is not available on the ```originalCCBS``` branch.
 
+### Running a benchmark set
 
+To evaluate the solver across a full instance set (e.g. one of the [MovingAI MAPF benchmarks](https://movingai.com/benchmarks/mapf.html)), two additional tools are provided: `movingai_converter`, which converts MovingAI `.map`/`.scen` files into the `map.xml`/task-xml format used by this project, and `run_benchmarks.sh`, which sweeps CCBS over an increasing number of agents for every scenario.
+
+Build the converter alongside the solver:
+```bash
+cmake .
+make CCBS movingai_converter
+```
+
+Lay out one subfolder per instance set under a main folder, each containing a MovingAI map file and its scenario files, e.g.:
+```
+Instances/
+  room-32-32-4/
+    room-32-32-4.map
+    room-32-32-4-random-1.scen
+    room-32-32-4-random-2.scen
+    ...
+```
+(`movingai_converter` requires exactly one `.map` file and at least one `.scen` file per subfolder; a subfolder that already contains a converted `map.xml` is used as-is.)
+
+Then run:
+```bash
+./run_benchmarks.sh Instances --kmin 2 --kmax 4 --jobs 8
+```
+This converts every subfolder in `Instances` that isn't already converted, then, for each subfolder, each connectedness value from `2` to `4`, and each scenario, runs CCBS starting at 2 agents and incrementing by one (taking the first N agents from the scenario, in file order) until a run is unsolved or times out. Up to 8 of these `(subfolder, connectedness, scenario)` sweeps run in parallel, so scenario files within the same connectedness value are processed concurrently. Results are aggregated into `Instances/benchmark_results.csv` (one row per run: agent count, connectedness, solved, runtime, makespan, flowtime, and search-tree statistics).
+
+Full usage:
+```
+./run_benchmarks.sh <main_folder> [options]
+```
+`main_folder` is the only required, positional argument; everything else is an optional flag (`--flag value` or `--flag=value`):
+- `--kmin`, `--kmax` - connectedness range to sweep (2-5, inclusive; default: 2-5).
+- `--max-agents` - cap on the agent-count sweep per scenario (default: no cap).
+- `--output` - where to write the aggregated CSV (default: `<main_folder>/benchmark_results.csv`).
+- `--jobs` - number of `(subfolder, connectedness, scenario)` sweeps to run in parallel (default: 1). Each agent-count sweep within one scenario stays sequential, since it stops at the first unsolved size.
+- `--config` - config.xml template to sweep from (see [Config options](#config-options) above; default: `Examples/config.xml`). `--kmin`/`--kmax` override its `<connectedness>` per run; every other field is taken from the template as-is. There is no `--timelimit` flag: the per-run time limit comes only from the template's `<timelimit>`, which also sizes the external watchdog process that enforces it (falls back to CCBS's own built-in default, 30s, if the tag is missing).
 
 
