@@ -25,6 +25,7 @@
     #define CNS_TAG_START_I         "start_i"
     #define CNS_TAG_START_J         "start_j"
     #define CNS_TAG_START_ID        "start_id"
+    #define CNS_TAG_START_TIME      "start_time"
     #define CNS_TAG_GOAL_I          "goal_i"
     #define CNS_TAG_GOAL_J          "goal_j"
     #define CNS_TAG_GOAL_ID         "goal_id"

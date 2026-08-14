@@ -392,7 +392,9 @@ Path SIPP::find_path(Agent agent, const Map &map, std::list<Constraint> cons, He
         {
             if(i == 0)
             {
-                starts = {get_endpoints(agent.start_id, agent.start_i, agent.start_j, 0, CN_INFINITY).at(0)};
+                starts = {get_endpoints(agent.start_id, agent.start_i, agent.start_j, agent.start_time, CN_INFINITY).at(0)};
+                // TrajPlan-ScheMPC: as in the non-landmark branch below.
+                starts[0].g = std::max(agent.start_time, starts[0].interval.first);
                 goals = get_endpoints(landmarks[i].id1, map.get_i(landmarks[i].id1), map.get_j(landmarks[i].id1), landmarks[i].t1, landmarks[i].t2);
             }
             else
@@ -487,13 +489,27 @@ Path SIPP::find_path(Agent agent, const Map &map, std::list<Constraint> cons, He
     }
     else
     {
-        starts = {get_endpoints(agent.start_id, agent.start_i, agent.start_j, 0, CN_INFINITY).at(0)};
+        starts = {get_endpoints(agent.start_id, agent.start_i, agent.start_j, agent.start_time, CN_INFINITY).at(0)};
+        // TrajPlan-ScheMPC: the search starts when the agent is released, not at 0.
+        starts[0].g = std::max(agent.start_time, starts[0].interval.first);
         goals = {get_endpoints(agent.goal_id, agent.goal_i, agent.goal_j, 0, CN_INFINITY).back()};
         parts = find_partial_path(starts, goals, map, h_values);
         expanded = int(close.size());
         if(parts[0].cost < 0)
             return Path();
         result = parts[0];
+    }
+    // TrajPlan-ScheMPC: make the pre-release wait an explicit leading section so
+    // that conflict checking sees the agent occupying its start node until it is
+    // released. check_paths turns consecutive nodes into moves, and a move whose
+    // endpoints coincide is a wait, so this is the parked interval. Skipped when
+    // the release time is zero, which would otherwise create a zero-length move
+    // and make check_conflict divide by zero.
+    if(agent.start_time > CN_EPSILON && !result.nodes.empty())
+    {
+        Node parked = result.nodes.front();
+        parked.g = 0;
+        result.nodes.insert(result.nodes.begin(), parked);
     }
     result.nodes.shrink_to_fit();
     result.cost = result.nodes.back().g;

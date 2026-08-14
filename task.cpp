@@ -33,6 +33,8 @@ bool Task::get_task(const char *FileName, int k)
         a.goal_i = agent->DoubleAttribute(CNS_TAG_GOAL_I);
         a.goal_j = agent->DoubleAttribute(CNS_TAG_GOAL_J);
         a.goal_id = agent->IntAttribute(CNS_TAG_GOAL_ID);
+        // TrajPlan-ScheMPC: optional release time; absent attribute yields 0.
+        a.start_time = agent->DoubleAttribute(CNS_TAG_START_TIME);
         a.id = int(agents.size());
         agents.push_back(a);
         if(int(agents.size()) == k)

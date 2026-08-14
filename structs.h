@@ -23,8 +23,11 @@ struct Agent
     int start_id, goal_id;
     int id;
     double size;
+    // TrajPlan-ScheMPC: earliest time the agent may leave its start node. It is
+    // parked there over [0, start_time). Zero reproduces upstream behaviour.
+    double start_time;
     Agent(int s_id = -1, int g_id = -1, int _id = -1)
-        :start_id(s_id), goal_id(g_id), id(_id) {}
+        :start_id(s_id), goal_id(g_id), id(_id), start_time(0) {}
 };
 
 struct gNode
